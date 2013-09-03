@@ -103,14 +103,14 @@ limits dn.exact="<%= @sync_binddn%>" time.soft=unlimited time.hard=unlimited siz
 <%= idx %>
 <% end -%>
 
-# users can authenticate and change their password
-access to dn.subtree="<%= @suffix %>" attrs=userPassword,shadowLastChange,
-<% if @syncprov and @sync_binddn != false then -%>
-	by dn.exact="<%= @sync_binddn %>" read
-<% end -%>
-	by self write
-	by anonymous auth
-	by * none
+# # users can authenticate and change their password
+# access to dn.subtree="<%= @suffix %>" attrs=userPassword,shadowLastChange,
+# <% if @syncprov and @sync_binddn != false then -%>
+# 	by dn.exact="<%= @sync_binddn %>" read
+# <% end -%>
+# 	by self write
+# 	by anonymous auth
+# 	by * none
 
 #access to dn.subtree="<%= @suffix %>" attrs=sambaNTPassword,sambaLMPassword,sambaPwdMustChange,sambaBadPasswordCount,sambaBadPasswordTime,sambaPwdLastSet
 #<% if @syncprov and @sync_binddn != false then -%>
@@ -121,16 +121,39 @@ access to dn.subtree="<%= @suffix %>" attrs=userPassword,shadowLastChange,
 #	by * none
 
 ## some attributes need to be readable anonymously so that 'id user' can answer correctly
-access to dn.subtree="<%= @suffix %>" attrs=objectClass,entry,gecos,homeDirectory,uid,uidNumber,gidNumber,cn,memberUid
-<% if @syncprov and @sync_binddn != false then -%>
-	by dn.exact="<%= @sync_binddn %>" read
-<% end -%>
-	by * read
+# access to dn.subtree="<%= @suffix %>" attrs=objectClass,entry,gecos,homeDirectory,uid,uidNumber,gidNumber,cn,memberUid
+# <% if @syncprov and @sync_binddn != false then -%>
+# 	by dn.exact="<%= @sync_binddn %>" read
+# <% end -%>
+# 	by * read
 
-access to dn.subtree="<%= @suffix %>"
-<% if @syncprov and @sync_binddn != false then -%>
-	by dn.exact="<%= @sync_binddn %>" read
+# access to dn.subtree="<%= @suffix %>"
+# <% if @syncprov and @sync_binddn != false then -%>
+# 	by dn.exact="<%= @sync_binddn %>" read
+# <% end -%>
+# 	by self read
+# 	by * read
+
+
+
+<% scope.lookupvar('access_cust').each do |access_customer| -%>
+#
+# <%= access_customer %>
+#
+
+access to dn.one="ou=<%= @access_ou %>,dc=<%= access_customer %>,<%= @suffix %>" attr=userPassword
+        by self write
+        by anonymous auth
+        by dn.exact="<%= @rootdn %>" write
+        by dn.exact="uid=<%= @access_user %>,ou=<%= @access_ou %>,dc=<%= access_customer %>,<%= @suffix %>" write
+
+access to dn.one="ou=<%= @access_ou %>,dc=<%= access_customer %>,<%= @suffix %>"
+        by self read
+        by dn.exact="<%= @rootdn %>" write
+        by dn.exact="uid=<%= @access_user %>,ou=<%= @access_ou %>,dc=<%= access_customer %>,<%= @suffix %>" write
+
+access to dn.exact="ou=<%= @access_ou %>,dc=<%= access_customer %>,<%= @suffix %>"
+        by dn.exact="<%= @rootdn %>" write
+        by dn.exact="uid=<%= @access_user %>,ou=<%= @access_ou %>,dc=<%= access_customer %>,<%= @suffix %>" write
 <% end -%>
-	by self read
-	by * read
 
