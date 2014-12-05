@@ -110,7 +110,7 @@ limits dn.exact="<%= @sync_binddn%>" time.soft=unlimited time.hard=unlimited siz
 # <% end -%>
 # 	by self write
 # 	by anonymous auth
-# 	by * none
+#	by * none
 
 #access to dn.subtree="<%= @suffix %>" attrs=sambaNTPassword,sambaLMPassword,sambaPwdMustChange,sambaBadPasswordCount,sambaBadPasswordTime,sambaPwdLastSet
 #<% if @syncprov and @sync_binddn != false then -%>
@@ -127,11 +127,11 @@ limits dn.exact="<%= @sync_binddn%>" time.soft=unlimited time.hard=unlimited siz
 # <% end -%>
 # 	by * read
 
-# access to dn.subtree="<%= @suffix %>"
-# <% if @syncprov and @sync_binddn != false then -%>
-# 	by dn.exact="<%= @sync_binddn %>" read
-# <% end -%>
-# 	by self read
+#access to dn.subtree="<%= @suffix %>"
+#<% if @syncprov and @sync_binddn != false then -%>
+#	by dn.exact="<%= @sync_binddn %>" read
+#<% end -%>
+#	by self read
 # 	by * read
 
 
@@ -146,14 +146,23 @@ access to dn.one="ou=<%= @access_ou %>,dc=<%= access_customer %>,<%= @suffix %>"
         by anonymous auth
         by dn.exact="<%= @rootdn %>" write
         by dn.exact="uid=<%= @access_user %>,ou=<%= @access_ou %>,dc=<%= access_customer %>,<%= @suffix %>" write
+<% if access_customer == "asics" then -%>
+        by dn.exact="uid=asics-gtm,ou=users,dc=asics,dc=dam" read
+<% end -%>
 
 access to dn.one="ou=<%= @access_ou %>,dc=<%= access_customer %>,<%= @suffix %>"
         by self read
         by dn.exact="<%= @rootdn %>" write
         by dn.exact="uid=<%= @access_user %>,ou=<%= @access_ou %>,dc=<%= access_customer %>,<%= @suffix %>" write
+<% if access_customer == "asics" then -%>
+        by dn.exact="uid=asics-gtm,ou=users,dc=asics,dc=dam" read
+<% end -%>
 
 access to dn.exact="ou=<%= @access_ou %>,dc=<%= access_customer %>,<%= @suffix %>"
         by dn.exact="<%= @rootdn %>" write
         by dn.exact="uid=<%= @access_user %>,ou=<%= @access_ou %>,dc=<%= access_customer %>,<%= @suffix %>" write
+<% if access_customer == "asics" then -%>
+        by dn.exact="uid=asics-gtm,ou=users,dc=asics,dc=dam" read
+<% end -%>
 <% end -%>
 
